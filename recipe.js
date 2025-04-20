@@ -1,33 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import RecipeCard from '../components/RecipeCard';
-import '../css/Recipes.css'; // Assuming you want to use the same CSS as Main
+import PopupModal from '../components/popupmodel'; // Import popup modal
+import '../css/Recipes.css';
+import { useNavigate } from 'react-router-dom';
 
 const Recipes = () => {
-  const [recipes, setRecipes] = useState([]); // State to store fetched recipes
+  const [recipes, setRecipes] = useState([]); // Store recipes
+  const [showLoginPopup, setShowLoginPopup] = useState(false); // Control login popup
+  const navigate = useNavigate(); // For redirecting to login
 
-  // Fetch recipes from backend when component mounts
+  // Fetch all recipes on mount
   useEffect(() => {
     fetch('http://localhost:5000/recipe/all')
       .then((response) => response.json())
       .then((data) => {
         console.log("Response", data);
-        setRecipes(data); // Update state with fetched recipes
+        setRecipes(data);
       })
       .catch((error) => console.error('Error fetching recipes:', error));
   }, []);
 
-  // Handle view recipe (placeholder)
+  // Handle "View" (placeholder)
   const handleView = (recipe) => {
     console.log('Viewing recipe:', recipe);
-    // Add your view logic here
+    // Add view logic here
   };
 
-  // Handle add to cart
+  // Handle "Add to Cart"
   const handleAddToCart = async (recipe) => {
     const userId = localStorage.getItem("userId");
 
     if (!userId) {
-      alert("You must be logged in to add to cart.");
+      setShowLoginPopup(true); // 🔔 Show login modal if not logged in
       return;
     }
 
@@ -46,8 +50,7 @@ const Recipes = () => {
 
       const data = await res.json();
       console.log("Cart response:", data);
-
-      // Optionally: trigger Redux update or refresh cart
+      // You can optionally dispatch to Redux here
     } catch (err) {
       console.error("Error adding to cart", err);
     }
@@ -70,6 +73,16 @@ const Recipes = () => {
           />
         ))}
       </div>
+
+      {/* 🔔 Login Popup Modal */}
+      <PopupModal
+        show={showLoginPopup}
+        onClose={() => setShowLoginPopup(false)}
+        onLogin={() => {
+          setShowLoginPopup(false);
+          navigate("/login");
+        }}
+      />
     </div>
   );
 };
