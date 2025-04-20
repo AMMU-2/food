@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Modal, Button, Table } from "react-bootstrap";
 import "../css/Cart.css";
-import { setUser } from "../redux/cartSlice"; // Redux action to update user data
+import { setUser } from "../redux/cartSlice";
 
 const Cart = ({ show, handleClose }) => {
   const dispatch = useDispatch();
@@ -10,17 +10,14 @@ const Cart = ({ show, handleClose }) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalQuantity, setTotalQuantity] = useState(0);
 
-  // Get userId from Redux store
   const userId = useSelector((state) => state.auth.userId); 
 
-  // Fetch cart items when modal opens
   useEffect(() => {
     if (show) {
       fetchCartItems();
     }
   }, [show]);
 
-  // Function to fetch cart items from backend
   const fetchCartItems = async () => {
     try {
       if (!userId) {
@@ -37,16 +34,14 @@ const Cart = ({ show, handleClose }) => {
       setTotalPrice(data.totalPrice);
       setTotalQuantity(data.totalQuantity);
 
-      // Update Redux store with cart items
       dispatch(setUser({ cartItems: data.cartItems, totalQuantity: data.totalQuantity }));
     } catch (error) {
       console.error("Error fetching cart items:", error);
     }
   };
 
-  // Function to update item quantity in the cart
   const handleUpdateQuantity = async (cartItemId, newQuantity) => {
-    if (newQuantity < 1) return; // Prevent quantity from going below 1
+    if (newQuantity < 1) return;
 
     try {
       const response = await fetch("http://localhost:5000/cart/update", {
@@ -57,13 +52,12 @@ const Cart = ({ show, handleClose }) => {
 
       if (!response.ok) throw new Error("Failed to update quantity");
 
-      fetchCartItems(); // Refresh cart after update
+      fetchCartItems();
     } catch (error) {
       console.error("Error updating quantity:", error);
     }
   };
 
-  // Function to remove an item from the cart
   const handleRemoveItem = async (cartItemId) => {
     try {
       const response = await fetch(`http://localhost:5000/cart/remove/${cartItemId}`, {
@@ -72,13 +66,12 @@ const Cart = ({ show, handleClose }) => {
 
       if (!response.ok) throw new Error("Failed to remove item");
 
-      fetchCartItems(); // Refresh cart after removal
+      fetchCartItems();
     } catch (error) {
       console.error("Error removing item:", error);
     }
   };
 
-  // Function to handle checkout process
   const handleCheckout = async () => {
     try {
       const response = await fetch("http://localhost:5000/cart/checkout", {
@@ -89,13 +82,11 @@ const Cart = ({ show, handleClose }) => {
 
       if (!response.ok) throw new Error("Checkout failed");
 
-      // Clear cart after successful checkout
       setCartItems([]);
       setTotalQuantity(0);
       setTotalPrice(0);
 
-      // Update Redux store with empty cart
-      dispatch(setUser({ cartItems: [], totalQuantity: 0 })); 
+      dispatch(setUser({ cartItems: [], totalQuantity: 0 }));
       handleClose();
     } catch (error) {
       console.error("Error during checkout:", error);
@@ -114,7 +105,7 @@ const Cart = ({ show, handleClose }) => {
           <Table striped bordered hover>
             <thead>
               <tr>
-                <th>Cupcakes</th>
+                <th>Recipe</th>
                 <th>Price</th>
                 <th>Quantity</th>
                 <th>Action</th>
@@ -123,20 +114,13 @@ const Cart = ({ show, handleClose }) => {
             <tbody>
               {cartItems.map((item) => (
                 <tr key={item._id}>
-                  {/* Display cupcake name */}
-                  <td>{item.recipeId?.cakeName || "Unnamed Item"}</td>
-
-                  {/* Display cupcake price */}
+                  <td>{item.recipeId?.title || "Unnamed Item"}</td>
                   <td>Rs. {(item.recipeId?.price ? Number(item.recipeId.price) : 0).toFixed(2)}</td>
-
-                  {/* Quantity update buttons */}
                   <td>
                     <Button size="sm" onClick={() => handleUpdateQuantity(item._id, item.quantity - 1)}>-</Button>
                     <span className="mx-2">{item.quantity || 1}</span>
                     <Button size="sm" onClick={() => handleUpdateQuantity(item._id, item.quantity + 1)}>+</Button>
                   </td>
-
-                  {/* Remove item button */}
                   <td>
                     <Button variant="danger" size="sm" onClick={() => handleRemoveItem(item._id)}>Remove</Button>
                   </td>
@@ -146,7 +130,6 @@ const Cart = ({ show, handleClose }) => {
           </Table>
         )}
 
-        {/* Display total quantity and price */}
         <div className="cart-summary">
           <p><strong>Total Items:</strong> {totalQuantity}</p>
           <p><strong>Total Price:</strong> Rs. {totalPrice.toFixed(2)}</p>
