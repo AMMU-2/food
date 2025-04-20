@@ -1,62 +1,107 @@
+.recipes-page {
+  padding: 40px;
+  background-color: #121212;
+  min-height: 100vh;
+  color: white;
+  text-align: center;
+}
+
 .recipes-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 30px;
-  padding: 40px;
-  background-color: #f4f4f4;
-  max-width: 1000px; /* Set a maximum width to fit three cards */
-  margin: auto; /* Center the container */
+  margin-top: 30px;
 }
 
 .recipe-card {
-  background: #fff;
-  border: 1px solid #ddd;
-  width: 300px;
-  padding: 20px;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  width: 380px;  /* expanded width */
+  padding: 25px;
   position: relative;
   transition: all 0.3s ease;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+  color: #fff;
 }
 
 .recipe-card:hover {
-  transform: translateY(-5px);
-}
-
-.date-label {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  background-color: black;
-  color: white;
-  font-size: 12px;
-  padding: 4px 8px;
-  font-weight: bold;
-  border-radius: 2px;
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
 }
 
 .recipe-img {
   width: 100%;
-  height: auto;
-  margin-top: 30px;
-  margin-bottom: 10px;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
 
 .recipe-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-  margin: 10px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin: 12px 0;
+  text-align: center;
 }
 
 .recipe-desc {
-  font-size: 14px;
-  color: #555;
+  font-size: 16px;
+  color: #ddd;
   line-height: 1.6;
+  margin-bottom: 12px;
+  text-align: center;
 }
 
-.cupcake-list {
+.recipe-price {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffd700;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.card-buttons {
   display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.card-buttons button {
+  flex: 1;
+  padding: 10px 14px;
+  margin: 0 5px;
+  background: #ff5722;
+  border: none;
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.card-buttons button:hover {
+  background: #e64a19;
+}
+
+/* Responsive adjustments */
+
+@media (max-width: 1300px) {
+  .recipe-card {
+    width: 340px;
+  }
+}
+
+@media (max-width: 992px) {
+  .recipe-card {
+    width: 48%;
+  }
+}
+
+@media (max-width: 600px) {
+  .recipe-card {
+    width: 95%;
+  }
 }
