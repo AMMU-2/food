@@ -1,10 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>Error</title>
-</head>
-<body>
-<pre>ReferenceError: upload is not defined<br> &nbsp; &nbsp;at exports.addRecipe (C:\Users\AMULGL\Desktop\food\backend\controllers\recipecontroller.js:6:5)<br> &nbsp; &nbsp;at Layer.handleRequest (C:\Users\AMULGL\Desktop\food\backend\node_modules\router\lib\layer.js:152:17)<br> &nbsp; &nbsp;at next (C:\Users\AMULGL\Desktop\food\backend\node_modules\router\lib\route.js:157:13)<br> &nbsp; &nbsp;at done (C:\Users\AMULGL\Desktop\food\backend\node_modules\multer\lib\make-middleware.js:47:7)<br> &nbsp; &nbsp;at indicateDone (C:\Users\AMULGL\Desktop\food\backend\node_modules\multer\lib\make-middleware.js:51:68)<br> &nbsp; &nbsp;at C:\Users\AMULGL\Desktop\food\backend\node_modules\multer\lib\make-middleware.js:157:11<br> &nbsp; &nbsp;at WriteStream.&lt;anonymous&gt; (C:\Users\AMULGL\Desktop\food\backend\node_modules\multer\storage\disk.js:43:9)<br> &nbsp; &nbsp;at WriteStream.emit (node:events:519:35)<br> &nbsp; &nbsp;at finish (node:internal/streams/writable:953:10)<br> &nbsp; &nbsp;at node:internal/streams/writable:934:13</pre>
-</body>
-</html>
+.recipes-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  padding: 40px;
+  background-color: #f4f4f4;
+  max-width: 1000px; /* Set a maximum width to fit three cards */
+  margin: auto; /* Center the container */
+}
+
+.recipe-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  width: 300px;
+  padding: 20px;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.recipe-card:hover {
+  transform: translateY(-5px);
+}
+
+.date-label {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background-color: black;
+  color: white;
+  font-size: 12px;
+  padding: 4px 8px;
+  font-weight: bold;
+  border-radius: 2px;
+}
+
+.recipe-img {
+  width: 100%;
+  height: auto;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.recipe-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 10px 0;
+}
+
+.recipe-desc {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.cupcake-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
