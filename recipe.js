@@ -1,90 +1,77 @@
-import React, { useEffect, useState } from 'react';
-import RecipeCard from '../components/RecipeCard';
-import PopupModal from '../components/popupmodel'; // Import popup modal
-import '../css/Recipes.css';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../css/Header.css';
+import { FaShoppingCart } from 'react-icons/fa';
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../redux/authslice";
+import { clearCart, loadCartFromStorage } from "../redux/cartSlice";
+import Cart from "./Cart";
 
-const Recipes = () => {
-  const [recipes, setRecipes] = useState([]); // Store recipes
-  const [showLoginPopup, setShowLoginPopup] = useState(false); // Control login popup
-  const navigate = useNavigate(); // For redirecting to login
+function Header() {
+  const [showCart, setShowCart] = useState(false); // Toggle cart modal
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // Fetch all recipes on mount
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const totalCartQuantity = useSelector((state) => state.cart.cartUserCount);
+
+  // Load cart from localStorage when header mounts
   useEffect(() => {
-    fetch('http://localhost:5000/recipe/all')
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Response", data);
-        setRecipes(data);
-      })
-      .catch((error) => console.error('Error fetching recipes:', error));
-  }, []);
+    dispatch(loadCartFromStorage());
+    const syncCart = () => dispatch(loadCartFromStorage());
+    window.addEventListener("storage", syncCart);
+    return () => window.removeEventListener("storage", syncCart);
+  }, [dispatch]);
 
-  // Handle "View" (placeholder)
-  const handleView = (recipe) => {
-    console.log('Viewing recipe:', recipe);
-    // Add view logic here
-  };
-
-  // Handle "Add to Cart"
-  const handleAddToCart = async (recipe) => {
-    const userId = localStorage.getItem("userId");
-
-    if (!userId) {
-      setShowLoginPopup(true); // 🔔 Show login modal if not logged in
-      return;
-    }
-
-    try {
-      const res = await fetch("http://localhost:5000/cart/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          userId,
-          cakeId: recipe._id,
-          quantity: 1
-        })
-      });
-
-      const data = await res.json();
-      console.log("Cart response:", data);
-      // You can optionally dispatch to Redux here
-    } catch (err) {
-      console.error("Error adding to cart", err);
-    }
+  // Logout clears user session and cart
+  const handleLogOut = () => {
+    dispatch(logout());
+    dispatch(clearCart());
+    navigate("/");
   };
 
   return (
-    <div className="main">
-      <h2>Featured Recipes</h2>
-      <br />
-      <div className="cupcake-list">
-        {recipes.map(recipe => (
-          <RecipeCard
-            key={recipe._id}
-            image={recipe.imageUrl}
-            recipeName={recipe.title}
-            description={recipe.description}
-            price={recipe.price}
-            onView={() => handleView(recipe)}
-            onAddToCart={() => handleAddToCart(recipe)}
-          />
-        ))}
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+      <a className="navbar-brand d-flex align-items-center" href="#">
+        <span className="brand-logo">FOOD STORE</span>
+      </a>
+      <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span className="navbar-toggler-icon"></span>
+      </button>
+      <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul className="navbar-nav">
+          <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
+          <li className="nav-item"><Link className="nav-link" to="/about">About</Link></li>
+          <li className="nav-item"><Link className="nav-link" to="/recipes">Menu</Link></li>
+          <li className="nav-item"><Link className="nav-link" to="/Menu">Recipes</Link></li>
+          <li className="nav-item"><Link className="nav-link" to="/blog">Blog</Link></li>
+          {isLoggedIn && <li className="nav-item"><Link className="nav-link" to="/my-account">My Account</Link></li>}
+          <li className="nav-item"><Link className="nav-link" to="/contact">Contact Us</Link></li>
+
+          {/* 🛒 Cart icon with quantity */}
+          <li className="nav-item d-flex align-items-center mx-2">
+            <Link className="nav-link" onClick={() => setShowCart(true)}>
+              <FaShoppingCart size={18} /> Cart ({totalCartQuantity || 0})
+            </Link>
+          </li>
+
+          {/* 🔐 Auth buttons */}
+          {isLoggedIn ? (
+            <li className="nav-item"><Link className="nav-link" to="/" onClick={handleLogOut}>Logout</Link></li>
+          ) : (
+            <>
+              <li className="nav-item"><Link className="btn btn-outline-light btn-sm mx-2" to="/login">Login</Link></li>
+              <li className="nav-item"><Link className="btn btn-outline-light btn-sm" to="/register">Register</Link></li>
+            </>
+          )}
+        </ul>
       </div>
 
-      {/* 🔔 Login Popup Modal */}
-      <PopupModal
-        show={showLoginPopup}
-        onClose={() => setShowLoginPopup(false)}
-        onLogin={() => {
-          setShowLoginPopup(false);
-          navigate("/login");
-        }}
-      />
-    </div>
+      {/* 🧺 Cart Modal */}
+      <Cart show={showCart} handleClose={() => setShowCart(false)} />
+    </nav>
   );
-};
+}
 
-export default Recipes;
+export default Header;
