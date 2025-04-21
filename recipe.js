@@ -1,149 +1,39 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Modal, Button, Table } from "react-bootstrap";
-import "../css/Cart.css";
-import { setUser } from "../redux/cartSlice";
+import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../css/ContactUs.css';
+import image from '../assets/images/image.png'
 
-const Cart = ({ show, handleClose }) => {
-  const dispatch = useDispatch();
-  const [cartItems, setCartItems] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [totalQuantity, setTotalQuantity] = useState(0);
-
-  const userId = useSelector((state) => state.auth.userId); 
-
-  useEffect(() => {
-    if (show) {
-      fetchCartItems();
-    }
-  }, [show]);
-
-  const fetchCartItems = async () => {
-    try {
-      if (!userId) {
-        console.error("User ID is missing.");
-        return;
-      }
-
-      const response = await fetch(`http://localhost:5000/cart/${userId}`);
-
-      if (!response.ok) throw new Error("Failed to fetch cart items.");
-
-      const data = await response.json();
-      setCartItems(data.cartItems);
-      setTotalPrice(data.totalPrice);
-      setTotalQuantity(data.totalQuantity);
-
-      dispatch(setUser({ cartItems: data.cartItems, totalQuantity: data.totalQuantity }));
-    } catch (error) {
-      console.error("Error fetching cart items:", error);
-    }
-  };
-
-  const handleUpdateQuantity = async (cartItemId, newQuantity) => {
-    if (newQuantity < 1) return;
-
-    try {
-      const response = await fetch("http://localhost:5000/cart/update", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shoppingcartId: cartItemId, quantity: newQuantity }),
-      });
-
-      if (!response.ok) throw new Error("Failed to update quantity");
-
-      fetchCartItems();
-    } catch (error) {
-      console.error("Error updating quantity:", error);
-    }
-  };
-
-  const handleRemoveItem = async (cartItemId) => {
-    try {
-      const response = await fetch(`http://localhost:5000/cart/remove/${cartItemId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to remove item");
-
-      fetchCartItems();
-    } catch (error) {
-      console.error("Error removing item:", error);
-    }
-  };
-
-  const handleCheckout = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/cart/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
-      });
-
-      if (!response.ok) throw new Error("Checkout failed");
-
-      setCartItems([]);
-      setTotalQuantity(0);
-      setTotalPrice(0);
-
-      dispatch(setUser({ cartItems: [], totalQuantity: 0 }));
-      handleClose();
-    } catch (error) {
-      console.error("Error during checkout:", error);
-    }
-  };
-
+function ContactUs() {
   return (
-    <Modal show={show} onHide={handleClose} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>Recipe Cart</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {cartItems.length === 0 ? (
-          <p>Your cart is empty.</p>
-        ) : (
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Recipe</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cartItems.map((item) => (
-                <tr key={item._id}>
-                  <td>{item.recipeId?.title || "Unnamed Item"}</td>
-                  <td>Rs. {(item.recipeId?.price ? Number(item.recipeId.price) : 0).toFixed(2)}</td>
-                  <td>
-                    <Button size="sm" onClick={() => handleUpdateQuantity(item._id, item.quantity - 1)}>-</Button>
-                    <span className="mx-2">{item.quantity || 1}</span>
-                    <Button size="sm" onClick={() => handleUpdateQuantity(item._id, item.quantity + 1)}>+</Button>
-                  </td>
-                  <td>
-                    <Button variant="danger" size="sm" onClick={() => handleRemoveItem(item._id)}>Remove</Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        )}
-
-        <div className="cart-summary">
-          <p><strong>Total Items:</strong> {totalQuantity}</p>
-          <p><strong>Total Price:</strong> Rs. {totalPrice.toFixed(2)}</p>
-        </div>
-      </Modal.Body>
-
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>Close</Button>
-        {cartItems.length > 0 && (
-          <Button variant="primary" onClick={handleCheckout}>Checkout</Button>
-        )}
-      </Modal.Footer>
-    </Modal>
+    <div className="contactus-container">
+      <div className="contactus-form">
+        <h1>Request A Call Back</h1>
+        <form>
+          <div className="form-group">
+            <label htmlFor="name">Name</label>
+            <input type="text" id="name" className="form-control" />
+          </div>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input type="email" id="email" className="form-control" />
+          </div>
+          <div className="form-group">
+            <label htmlFor="phone">Phone</label>
+            <input type="tel" id="phone" className="form-control" />
+          </div>
+          <div className="form-group">
+            <label htmlFor="message">Message</label>
+            <textarea id="message" className="form-control"></textarea>
+          </div>
+          <button type="submit" className="btn btn-primary">Send</button>
+        </form>
+      </div>
+      <div className="contactus-image">
+        <img src={image} alt="Delicious food" />
+        {/* Replace path_to_image.jpg with actual image path */}
+      </div>
+    </div>
   );
-};
+}
 
-export default Cart;
+export default ContactUs;
